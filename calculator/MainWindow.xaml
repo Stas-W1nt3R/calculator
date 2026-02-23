@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:calculator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="00">
+        Title="MainWindow" Height="500" Width="367">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -40,32 +40,26 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Row="0" Grid.Column="0" Content="sin" Click="Operation_Click" FontSize="20"/>
-            <Button Grid.Row="0" Grid.Column="1" Content="cos" Click="Operation_Click" FontSize="20"/>
-            <Button Grid.Row="0" Grid.Column="2" Content="tg" Click="Operation_Click" FontSize="20"/>
-            <Button Grid.Row="0" Grid.Column="3" Content="ctg" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
+            <Button Grid.Row="0" Grid.Column="0" Content="1" Click="Operation_Click" FontSize="20"/>
+            <Button Grid.Row="0" Grid.Column="1" Content="2" Click="Operation_Click" FontSize="20"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="3" Click="Operation_Click" FontSize="20"/>
+            <Button Grid.Row="0" Grid.Column="3" Content="x" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
 
-            <Button Grid.Row="1" Grid.Column="0" Content="1" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="1" Grid.Column="1" Content="2" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="1" Grid.Column="2" Content="3" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="1" Grid.Column="3" Content="x" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
+            <Button Grid.Row="1" Grid.Column="0" Content="4" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="1" Grid.Column="1" Content="5" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="6" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="1" Grid.Column="3" Content="/" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
             
-            <Button Grid.Row="2" Grid.Column="0" Content="4" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="2" Grid.Column="1" Content="5" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="2" Grid.Column="2" Content="6" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="2" Grid.Column="3" Content="/" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
+            <Button Grid.Row="2" Grid.Column="0" Content="7" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="2" Grid.Column="1" Content="8" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="2" Grid.Column="2" Content="9" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="2" Grid.Column="3" Content="+" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
             
-            <Button Grid.Row="3" Grid.Column="0" Content="7" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="3" Grid.Column="1" Content="8" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="3" Grid.Column="2" Content="9" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="3" Grid.Column="3" Content="+" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
+            <Button Grid.Row="3" Grid.Column="0" Content="0" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="3" Grid.Column="1" Content="-" Click="Button_Click" FontSize="20"/>
+            <Button Grid.Row="3" Grid.Column="2" Content="C" Click="Button_Click" FontSize="20"/>
 
-            <Button Grid.Row="4" Grid.Column="0" Content="0" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="4" Grid.Column="1" Content="-" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="4" Grid.Column="2" Content="%" Click="Button_Click" FontSize="20"/>
-            <Button Grid.Row="4" Grid.Column="3" Content="!" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
-
-            <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="4" 
+            <Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="4" 
                     Content="=" Click="Equals_Click" FontSize="24" 
                     Background="LightBlue" Height="50"/>
         </Grid>
