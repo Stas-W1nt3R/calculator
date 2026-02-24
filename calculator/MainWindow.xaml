@@ -54,7 +54,7 @@
             <Button Grid.Row="2" Grid.Column="1" Content="5" Click="Button_Click" FontSize="20"/>
             <Button Grid.Row="2" Grid.Column="2" Content="6" Click="Button_Click" FontSize="20"/>
             <Button Grid.Row="2" Grid.Column="3" Content="-" Click="Operation_Click" FontSize="20" Background="LightBlue"/>
-            
+
             <Button Grid.Row="3" Grid.Column="0" Content="7" Click="Button_Click" FontSize="20"/>
             <Button Grid.Row="3" Grid.Column="1" Content="8" Click="Button_Click" FontSize="20"/>
             <Button Grid.Row="3" Grid.Column="2" Content="9" Click="Button_Click" FontSize="20"/>
@@ -67,5 +67,4 @@
 
         </Grid>
     </Grid>
-
 </Window>
