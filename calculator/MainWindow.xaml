@@ -119,17 +119,17 @@
 
             <Button Grid.Row="0" Grid.Column="0" 
                     Content="C" 
-                    Click="Operation_Click" 
+                    Click="ClearButton_Click" 
                     Style="{StaticResource FunctionButtonStyle}"/>
 
             <Button Grid.Row="0" Grid.Column="1" 
                     Content="⌫" 
-                    Click="Operation_Click" 
+                    Click="DeleteButton_Click" 
                     Style="{StaticResource FunctionButtonStyle}"/>
 
             <Button Grid.Row="0" Grid.Column="2" 
                     Content="±" 
-                    Click="Operation_Click" 
+                    Click="PlusMinusButton_Click" 
                     Style="{StaticResource FunctionButtonStyle}"/>
 
             <Button Grid.Row="0" Grid.Column="3" 
@@ -153,7 +153,7 @@
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="1" Grid.Column="3" 
-                    Content="×" 
+                    Content="x" 
                     Click="Operation_Click" 
                     Style="{StaticResource OperatorButtonStyle}"/>
 
@@ -205,7 +205,7 @@
 
             <Button Grid.Row="4" Grid.Column="2" 
                     Content="." 
-                    Click="Operation_Click" 
+                    Click="DecimalButton_Click" 
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="4" Grid.Column="3" 
