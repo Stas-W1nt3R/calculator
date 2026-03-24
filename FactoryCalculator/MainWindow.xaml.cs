@@ -1,148 +1,206 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Linq;
 
-namespace calculator
+namespace FactoryCalculator
 {
     public partial class MainWindow : Window
     {
-        private string currentInput = "0";
-        private string currentOperation = "";
-        private double firstNumber = 0;
-        private bool isNewCalculation = true;
-        private bool isOperatorJustPressed = false;
+        private string _currentInput = "0";
+        private string _currentOperation = "";
+        private double _firstNumber = 0;
+        private bool _isNewCalculation = true;
+        private bool _isOperatorJustPressed = false;
+        private IButtonFactory _buttonFactory;
+
+        // Публичные свойства для доступа из классов кнопок
+        public string CurrentInput
+        {
+            get => _currentInput;
+            set => _currentInput = value;
+        }
+
+        public string CurrentOperation
+        {
+            get => _currentOperation;
+            set => _currentOperation = value;
+        }
+
+        public double FirstNumber
+        {
+            get => _firstNumber;
+            set => _firstNumber = value;
+        }
+
+        public bool IsNewCalculation
+        {
+            get => _isNewCalculation;
+            set => _isNewCalculation = value;
+        }
+
+        public bool IsOperatorJustPressed
+        {
+            get => _isOperatorJustPressed;
+            set => _isOperatorJustPressed = value;
+        }
+       
 
         public MainWindow()
         {
             InitializeComponent();
-            DisplayTextBox.Text = currentInput;
+
+            // Сохраняем ссылку на TextBox
+            DisplayTextBox = this.FindName("DisplayTextBox") as TextBox;
+
+            _buttonFactory = new CalculatorButtonFactory();
+            DisplayTextBox.Text = _currentInput;
+
+            // Подключаем обработчик клавиатуры
+            this.KeyDown += MainWindow_KeyDown;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public void CalculateResult()
+        {
+            try
+            {
+                double secondNumber = double.Parse(_currentInput);
+                double result = 0;
+
+                switch (_currentOperation)
+                {
+                    case "+":
+                        result = _firstNumber + secondNumber;
+                        break;
+                    case "-":
+                        result = _firstNumber - secondNumber;
+                        break;
+                    case "x":
+                        result = _firstNumber * secondNumber;
+                        break;
+                    case "÷":
+                        if (secondNumber == 0)
+                        {
+                            MessageBox.Show("Нельзя делить на ноль", "Ошибка",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        result = _firstNumber / secondNumber;
+                        break;
+                }
+
+                _currentInput = result.ToString();
+                DisplayTextBox.Text = _currentInput;
+                _firstNumber = result;
+            }
+            catch (Exception)
+            {
+                DisplayTextBox.Text = "Ошибка";
+                _currentInput = "0";
+                _currentOperation = "";
+                _isNewCalculation = true;
+            }
+        }
+
+        private void DigitButton_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            string digit = button.Content?.ToString() ?? "";
-
-            if (isNewCalculation || currentInput == "0" || isOperatorJustPressed)
-            {
-                currentInput = digit;
-                isNewCalculation = false;
-                isOperatorJustPressed = false;
-            }
-            else
-            {
-                currentInput += digit;
-            }
-
-            DisplayTextBox.Text = currentInput;
+            string digit = button.Content.ToString();
+            IButton digitButton = _buttonFactory.CreateDigitButton(digit);
+            digitButton.Execute(this);
         }
 
-        private void Operation_Click(object sender, RoutedEventArgs e)
+        private void OperatorButton_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
-            string operation = button.Content?.ToString() ?? "";
-
-            if (!isOperatorJustPressed)
-            {
-                if (!string.IsNullOrEmpty(currentOperation))
-                {
-                    CalculateResult();
-                }
-                else
-                {
-                    firstNumber = double.Parse(currentInput);
-                }
-            }
-            currentOperation = operation;
-            isOperatorJustPressed = true;
+            string operation = button.Content.ToString();
+            IButton operatorButton = _buttonFactory.CreateOperatorButton(operation);
+            operatorButton.Execute(this);
         }
 
-        private void EqualButton_Click(object sender, RoutedEventArgs e)
+        private void FunctionButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(currentOperation) && !isOperatorJustPressed)
+            Button button = (Button)sender;
+            string content = button.Content.ToString();
+            string functionType = "";
+
+            switch (content)
             {
-                CalculateResult();
-                currentOperation = "";
-                isNewCalculation = true;
-            }
-        }
-
-        private void CalculateResult()
-        {
-            double secondNumber = double.Parse(currentInput);
-            double result = 0;
-
-            switch (currentOperation)
-            {
-                case "+":
-                    result = firstNumber + secondNumber;
-                    break;
-                case "-":
-                    result = firstNumber - secondNumber;
-                    break;
-                case "x":
-                    result = firstNumber * secondNumber;
-                    break;
-                case "÷":
-                    if (secondNumber == 0)
-                    {
-                        MessageBox.Show("Cannot divide by zero", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                    else
-                    {
-                        result = firstNumber / secondNumber;
-                    }
-                    break;
-            }
-            currentInput = result.ToString();
-
-            DisplayTextBox.Text = currentInput;
-            firstNumber = result;
-        }
-
-        private void ClearButton_Click(object sender, RoutedEventArgs e)
-        {
-            currentInput = "0";
-            currentOperation = "";
-            firstNumber = 0;
-            isNewCalculation = true;
-            isOperatorJustPressed = false;
-            DisplayTextBox.Text = currentInput;
-        }
-
-        private void DecimalButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (isOperatorJustPressed)
-            {
-                currentInput = "0,";
-                isOperatorJustPressed = false;
-            }
-            else if (!currentInput.Contains(','))
-            {
-                isNewCalculation = false;
-                currentInput += ",";
+                case "C": functionType = "Clear"; break;
+                case "⌫": functionType = "Delete"; break;
+                case "±": functionType = "PlusMinus"; break;
+                case "=": functionType = "Equals"; break;
+                case ".": functionType = "Decimal"; break;
             }
 
-            DisplayTextBox.Text = currentInput;
+            IButton functionButton = _buttonFactory.CreateFunctionButton(content, functionType);
+            functionButton.Execute(this);
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!isOperatorJustPressed && currentInput.Length > 0 && !isNewCalculation)
+            // Цифры (верхний ряд)
+            if (e.Key >= Key.D0 && e.Key <= Key.D9)
             {
-                currentInput = currentInput[..^1];
-                if (string.IsNullOrEmpty(currentInput) || currentInput == "-")
-                    currentInput = "0";
+                string digit = e.Key.ToString().Last().ToString();
+                IButton button = _buttonFactory.CreateDigitButton(digit);
+                button.Execute(this);
             }
-            DisplayTextBox.Text = currentInput;
-        }
-
-        private void PlusMinusButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!isOperatorJustPressed && !isNewCalculation && currentInput != "0")
+            // Цифры (NumPad)
+            else if (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
             {
-                currentInput = currentInput.StartsWith('-') ? currentInput[1..] : "-" + currentInput;
-                DisplayTextBox.Text = currentInput;
+                string digit = (e.Key - Key.NumPad0).ToString();
+                IButton button = _buttonFactory.CreateDigitButton(digit);
+                button.Execute(this);
+            }
+            // Сложение
+            else if (e.Key == Key.Add || e.Key == Key.OemPlus)
+            {
+                IButton button = _buttonFactory.CreateOperatorButton("+");
+                button.Execute(this);
+            }
+            // Вычитание
+            else if (e.Key == Key.Subtract || e.Key == Key.OemMinus)
+            {
+                IButton button = _buttonFactory.CreateOperatorButton("-");
+                button.Execute(this);
+            }
+            // Умножение
+            else if (e.Key == Key.Multiply)
+            {
+                IButton button = _buttonFactory.CreateOperatorButton("x");
+                button.Execute(this);
+            }
+            // Деление
+            else if (e.Key == Key.Divide || e.Key == Key.OemQuestion)
+            {
+                IButton button = _buttonFactory.CreateOperatorButton("÷");
+                button.Execute(this);
+            }
+            // Равно (Enter)
+            else if (e.Key == Key.Enter)
+            {
+                IButton button = _buttonFactory.CreateFunctionButton("=", "Equals");
+                button.Execute(this);
+            }
+            // Десятичная точка
+            else if (e.Key == Key.Decimal || e.Key == Key.OemPeriod || e.Key == Key.OemComma)
+            {
+                IButton button = _buttonFactory.CreateFunctionButton(".", "Decimal");
+                button.Execute(this);
+            }
+            // Очистка (Escape)
+            else if (e.Key == Key.Escape)
+            {
+                IButton button = _buttonFactory.CreateFunctionButton("C", "Clear");
+                button.Execute(this);
+            }
+            // Удаление (Backspace)
+            else if (e.Key == Key.Back)
+            {
+                IButton button = _buttonFactory.CreateFunctionButton("⌫", "Delete");
+                button.Execute(this);
             }
         }
     }
