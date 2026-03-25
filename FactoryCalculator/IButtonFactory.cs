@@ -11,5 +11,6 @@ namespace FactoryCalculator
         IButton CreateDigitButton(string digit);
         IButton CreateOperatorButton(string operation);
         IButton CreateFunctionButton(string content, string functionType);
+        IButton CreateScientificButton(string content, string functionType);
     }
 }

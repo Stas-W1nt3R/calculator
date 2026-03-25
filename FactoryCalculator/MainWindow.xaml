@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FactoryCalculator"
         mc:Ignorable="d"
-        Title="Калькулятор" Height="500" Width="367"
+        Title="Научный калькулятор" Height="550" Width="500"
         WindowStartupLocation="CenterScreen"
         Background="#1A1A1A">
 
     <Window.Resources>
         <Style x:Key="NumberButtonStyle" TargetType="Button">
-            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontWeight" Value="DemiBold"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="#2D2D2D"/>
@@ -42,7 +42,7 @@
         <Style x:Key="OperatorButtonStyle" TargetType="Button" BasedOn="{StaticResource NumberButtonStyle}">
             <Setter Property="Background" Value="#FF9F0A"/>
             <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontSize" Value="22"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#FFB83B"/>
@@ -56,7 +56,7 @@
         <Style x:Key="FunctionButtonStyle" TargetType="Button" BasedOn="{StaticResource NumberButtonStyle}">
             <Setter Property="Background" Value="#3D3D3D"/>
             <Setter Property="Foreground" Value="#FF9F0A"/>
-            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -70,19 +70,27 @@
 
         <Style x:Key="EqualsButtonStyle" TargetType="Button" BasedOn="{StaticResource OperatorButtonStyle}">
             <Setter Property="Background" Value="#FF9F0A"/>
-            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="FontSize" Value="24"/>
             <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style x:Key="ExpandButtonStyle" TargetType="Button" BasedOn="{StaticResource FunctionButtonStyle}">
+            <Setter Property="Background" Value="#FF9F0A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
         </Style>
     </Window.Resources>
 
-    <Grid Margin="15">
+    <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Дисплей -->
         <Border Grid.Row="0" 
-                Margin="0,0,0,15" 
+                Margin="15,15,15,0" 
                 Background="#1F1F1F" 
                 CornerRadius="12"
                 BorderBrush="#3D3D3D"
@@ -102,7 +110,16 @@
                      BorderThickness="0"/>
         </Border>
 
-        <Grid Grid.Row="1">
+        <!-- Кнопка расширения -->
+        <Button Grid.Row="1" 
+                Content=" Научные функции" 
+                Click="ToggleScientificPanel_Click"
+                Style="{StaticResource ExpandButtonStyle}"
+                Margin="15,10,15,10"
+                Height="40"/>
+
+        <!-- Основные кнопки -->
+        <Grid Grid.Row="2" Margin="15,0,15,15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -117,6 +134,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Строка 1 -->
             <Button Grid.Row="0" Grid.Column="0" 
                     Content="C" 
                     Click="FunctionButton_Click" 
@@ -137,6 +155,7 @@
                     Click="OperatorButton_Click" 
                     Style="{StaticResource OperatorButtonStyle}"/>
 
+            <!-- Строка 2 -->
             <Button Grid.Row="1" Grid.Column="0" 
                     Content="7" 
                     Click="DigitButton_Click" 
@@ -157,6 +176,7 @@
                     Click="OperatorButton_Click" 
                     Style="{StaticResource OperatorButtonStyle}"/>
 
+            <!-- Строка 3 -->
             <Button Grid.Row="2" Grid.Column="0" 
                     Content="4" 
                     Click="DigitButton_Click" 
@@ -177,6 +197,7 @@
                     Click="OperatorButton_Click" 
                     Style="{StaticResource OperatorButtonStyle}"/>
 
+            <!-- Строка 4 -->
             <Button Grid.Row="3" Grid.Column="0" 
                     Content="1" 
                     Click="DigitButton_Click" 
@@ -197,6 +218,7 @@
                     Click="OperatorButton_Click" 
                     Style="{StaticResource OperatorButtonStyle}"/>
 
+            <!-- Строка 5 -->
             <Button Grid.Row="4" Grid.Column="0" 
                     Content="0" 
                     Click="DigitButton_Click" 
@@ -212,7 +234,146 @@
                     Content="=" 
                     Click="FunctionButton_Click" 
                     Style="{StaticResource EqualsButtonStyle}"/>
-
         </Grid>
+
+        <!-- Всплывающее окно с научными функциями -->
+        <Popup x:Name="ScientificPopup" 
+               PlacementTarget="{Binding ElementName=DisplayTextBox}"
+               Placement="Bottom"
+               StaysOpen="False"
+               Width="460"
+               Height="380">
+            <Border Background="#2D2D2D" 
+                    CornerRadius="12" 
+                    BorderBrush="#FF9F0A" 
+                    BorderThickness="2"
+                    Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Заголовок -->
+                    <Label Grid.Row="0" Grid.ColumnSpan="4" 
+                           Content="Научные функции" 
+                           Foreground="#FF9F0A" 
+                           HorizontalAlignment="Center"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,5"/>
+
+                    <!-- Тригонометрические функции -->
+                    <Label Grid.Row="1" Grid.ColumnSpan="4" 
+                           Content="Тригонометрические" 
+                           Foreground="#FF9F0A" 
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Margin="0,5"/>
+
+                    <Button Grid.Row="2" Grid.Column="0" 
+                            Content="sin" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="2" Grid.Column="1" 
+                            Content="cos" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="2" Grid.Column="2" 
+                            Content="tan" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="2" Grid.Column="3" 
+                            Content="√" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <!-- Степени и корни -->
+                    <Label Grid.Row="3" Grid.ColumnSpan="4" 
+                           Content="Степени и корни" 
+                           Foreground="#FF9F0A" 
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Margin="0,5"/>
+
+                    <Button Grid.Row="4" Grid.Column="0" 
+                            Content="x²" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="4" Grid.Column="1" 
+                            Content="xʸ" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="4" Grid.Column="2" 
+                            Content="%" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <!-- Логарифмы -->
+                    <Label Grid.Row="5" Grid.ColumnSpan="4" 
+                           Content="Логарифмы" 
+                           Foreground="#FF9F0A" 
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Margin="0,5"/>
+
+                    <Button Grid.Row="6" Grid.Column="0" 
+                            Content="log" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="6" Grid.Column="1" 
+                            Content="ln" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <!-- Память -->
+                    <Label Grid.Row="7" Grid.ColumnSpan="4" 
+                           Content="Память" 
+                           Foreground="#FF9F0A" 
+                           HorizontalAlignment="Center"
+                           FontSize="12"
+                           Margin="0,5"/>
+
+                    <Button Grid.Row="8" Grid.Column="0" 
+                            Content="MS" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="8" Grid.Column="1" 
+                            Content="MR" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="8" Grid.Column="2" 
+                            Content="MC" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+
+                    <Button Grid.Row="8" Grid.Column="3" 
+                            Content="M+" 
+                            Click="ScientificButton_Click" 
+                            Style="{StaticResource FunctionButtonStyle}"/>
+                </Grid>
+            </Border>
+        </Popup>
     </Grid>
 </Window>

@@ -13,9 +13,9 @@ namespace FactoryCalculator
         private double _firstNumber = 0;
         private bool _isNewCalculation = true;
         private bool _isOperatorJustPressed = false;
+        private double _memoryValue = 0;
         private IButtonFactory _buttonFactory;
 
-        // Публичные свойства для доступа из классов кнопок
         public string CurrentInput
         {
             get => _currentInput;
@@ -45,19 +45,18 @@ namespace FactoryCalculator
             get => _isOperatorJustPressed;
             set => _isOperatorJustPressed = value;
         }
-       
+
+        public double MemoryValue
+        {
+            get => _memoryValue;
+            set => _memoryValue = value;
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-
-            // Сохраняем ссылку на TextBox
-            DisplayTextBox = this.FindName("DisplayTextBox") as TextBox;
-
             _buttonFactory = new CalculatorButtonFactory();
             DisplayTextBox.Text = _currentInput;
-
-            // Подключаем обработчик клавиатуры
             this.KeyDown += MainWindow_KeyDown;
         }
 
@@ -88,11 +87,15 @@ namespace FactoryCalculator
                         }
                         result = _firstNumber / secondNumber;
                         break;
+                    case "^":
+                        result = Math.Pow(_firstNumber, secondNumber);
+                        break;
                 }
 
                 _currentInput = result.ToString();
                 DisplayTextBox.Text = _currentInput;
                 _firstNumber = result;
+                _isNewCalculation = true;
             }
             catch (Exception)
             {
@@ -103,12 +106,23 @@ namespace FactoryCalculator
             }
         }
 
+        private void ToggleScientificPanel_Click(object sender, RoutedEventArgs e)
+        {
+            // Открываем или закрываем Popup
+            if (ScientificPopup.IsOpen)
+                ScientificPopup.IsOpen = false;
+            else
+                ScientificPopup.IsOpen = true;
+        }
+
         private void DigitButton_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
             string digit = button.Content.ToString();
             IButton digitButton = _buttonFactory.CreateDigitButton(digit);
             digitButton.Execute(this);
+            // Закрываем Popup если открыт
+            if (ScientificPopup.IsOpen) ScientificPopup.IsOpen = false;
         }
 
         private void OperatorButton_Click(object sender, RoutedEventArgs e)
@@ -117,6 +131,8 @@ namespace FactoryCalculator
             string operation = button.Content.ToString();
             IButton operatorButton = _buttonFactory.CreateOperatorButton(operation);
             operatorButton.Execute(this);
+            // Закрываем Popup если открыт
+            if (ScientificPopup.IsOpen) ScientificPopup.IsOpen = false;
         }
 
         private void FunctionButton_Click(object sender, RoutedEventArgs e)
@@ -136,72 +152,97 @@ namespace FactoryCalculator
 
             IButton functionButton = _buttonFactory.CreateFunctionButton(content, functionType);
             functionButton.Execute(this);
+            // Закрываем Popup если открыт
+            if (ScientificPopup.IsOpen) ScientificPopup.IsOpen = false;
+        }
+
+        private void ScientificButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+            string content = button.Content.ToString();
+            string functionType = "";
+
+            switch (content)
+            {
+                case "√": functionType = "Sqrt"; break;
+                case "x²": functionType = "Power"; break;
+                case "xʸ": functionType = "PowerY"; break;
+                case "log": functionType = "Log"; break;
+                case "ln": functionType = "Ln"; break;
+                case "sin": functionType = "Sin"; break;
+                case "cos": functionType = "Cos"; break;
+                case "tan": functionType = "Tan"; break;
+                case "%": functionType = "Percent"; break;
+                case "MS": functionType = "MemorySave"; break;
+                case "MR": functionType = "MemoryRecall"; break;
+                case "MC": functionType = "MemoryClear"; break;
+                case "M+": functionType = "MemoryAdd"; break;
+            }
+
+            IButton sciButton = _buttonFactory.CreateScientificButton(content, functionType);
+            sciButton.Execute(this);
+
+            // Закрываем Popup после нажатия научной кнопки
+            if (ScientificPopup.IsOpen) ScientificPopup.IsOpen = false;
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            // Цифры (верхний ряд)
             if (e.Key >= Key.D0 && e.Key <= Key.D9)
             {
                 string digit = e.Key.ToString().Last().ToString();
                 IButton button = _buttonFactory.CreateDigitButton(digit);
                 button.Execute(this);
             }
-            // Цифры (NumPad)
             else if (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
             {
                 string digit = (e.Key - Key.NumPad0).ToString();
                 IButton button = _buttonFactory.CreateDigitButton(digit);
                 button.Execute(this);
             }
-            // Сложение
-            else if (e.Key == Key.Add || e.Key == Key.OemPlus)
+            else if (e.Key == Key.Add)
             {
                 IButton button = _buttonFactory.CreateOperatorButton("+");
                 button.Execute(this);
             }
-            // Вычитание
-            else if (e.Key == Key.Subtract || e.Key == Key.OemMinus)
+            else if (e.Key == Key.Subtract)
             {
                 IButton button = _buttonFactory.CreateOperatorButton("-");
                 button.Execute(this);
             }
-            // Умножение
             else if (e.Key == Key.Multiply)
             {
                 IButton button = _buttonFactory.CreateOperatorButton("x");
                 button.Execute(this);
             }
-            // Деление
-            else if (e.Key == Key.Divide || e.Key == Key.OemQuestion)
+            else if (e.Key == Key.Divide)
             {
                 IButton button = _buttonFactory.CreateOperatorButton("÷");
                 button.Execute(this);
             }
-            // Равно (Enter)
             else if (e.Key == Key.Enter)
             {
                 IButton button = _buttonFactory.CreateFunctionButton("=", "Equals");
                 button.Execute(this);
             }
-            // Десятичная точка
-            else if (e.Key == Key.Decimal || e.Key == Key.OemPeriod || e.Key == Key.OemComma)
+            else if (e.Key == Key.Decimal || e.Key == Key.OemPeriod)
             {
                 IButton button = _buttonFactory.CreateFunctionButton(".", "Decimal");
                 button.Execute(this);
             }
-            // Очистка (Escape)
             else if (e.Key == Key.Escape)
             {
                 IButton button = _buttonFactory.CreateFunctionButton("C", "Clear");
                 button.Execute(this);
             }
-            // Удаление (Backspace)
             else if (e.Key == Key.Back)
             {
                 IButton button = _buttonFactory.CreateFunctionButton("⌫", "Delete");
                 button.Execute(this);
             }
+
+            // Закрываем Popup при нажатии клавиши
+            if (ScientificPopup.IsOpen) ScientificPopup.IsOpen = false;
         }
     }
 }

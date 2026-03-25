@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace FactoryCalculator
 {
@@ -21,6 +22,11 @@ namespace FactoryCalculator
         public IButton CreateFunctionButton(string content, string functionType)
         {
             return new FunctionButton(content, functionType);
+        }
+
+        public IButton CreateScientificButton(string content, string functionType)
+        {
+            return new ScientificButton(content, functionType);
         }
     }
 }
