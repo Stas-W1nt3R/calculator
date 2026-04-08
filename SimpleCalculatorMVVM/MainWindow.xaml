@@ -262,12 +262,12 @@
         <Popup x:Name="ScientificPopup" 
                IsOpen="{Binding IsScientificPopupOpen, Mode=TwoWay}"
                PlacementTarget="{Binding ElementName=DisplayTextBox}"
-               Placement="Bottom"
+               Placement="Center"
                StaysOpen="False"
                Width="460"
                Height="380">
             <Border Background="#2D2D2D" 
-                    CornerRadius="12" 
+                    CornerRadius="20" 
                     BorderBrush="#FF9F0A" 
                     BorderThickness="2"
                     Padding="10">

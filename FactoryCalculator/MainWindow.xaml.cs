@@ -60,6 +60,7 @@ namespace FactoryCalculator
             this.KeyDown += MainWindow_KeyDown;
         }
 
+
         public void CalculateResult()
         {
             try

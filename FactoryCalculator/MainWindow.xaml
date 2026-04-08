@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="Научный калькулятор" Height="550" Width="500"
         WindowStartupLocation="CenterScreen"
-        Background="#1A1A1A">
+        Background="#1A1A1A"
+        PreviewKeyDown="Window_PreviewKeyDown">
 
     <Window.Resources>
         <Style x:Key="NumberButtonStyle" TargetType="Button">
