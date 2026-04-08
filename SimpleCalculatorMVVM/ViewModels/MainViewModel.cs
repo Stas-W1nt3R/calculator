@@ -51,41 +51,15 @@ namespace SimpleCalculatorMVVM.ViewModels
         private void ExecuteDigit(object parameter)
         {
             string digit = parameter?.ToString() ?? "0";
-
-            if (_model.IsNewCalculation || _model.CurrentInput == "0" || _model.IsOperatorJustPressed)
-            {
-                DisplayText = digit;
-                _model.IsNewCalculation = false;
-                _model.IsOperatorJustPressed = false;
-            }
-            else
-            {
-                DisplayText += digit;
-            }
+            _model.AddDigit(digit);
+            UpdateDisplay();
         }
 
         private void ExecuteOperator(object parameter)
         {
             string operation = parameter?.ToString() ?? "";
-
-            if (!_model.IsOperatorJustPressed)
-            {
-                if (!string.IsNullOrEmpty(_model.CurrentOperation))
-                {
-                    _model.CalculateResult();
-                    DisplayText = _model.CurrentInput;
-                }
-                else
-                {
-                    if (double.TryParse(_model.CurrentInput, out double number))
-                        _model.FirstNumber = number;
-                    else
-                        _model.FirstNumber = 0;
-                }
-            }
-
-            _model.CurrentOperation = operation;
-            _model.IsOperatorJustPressed = true;
+            _model.SetOperator(operation);
+            UpdateDisplay();
         }
 
         private void ExecuteFunction(object parameter)
@@ -95,151 +69,80 @@ namespace SimpleCalculatorMVVM.ViewModels
             switch (function)
             {
                 case "Clear":
-                    _model.Reset();
-                    DisplayText = _model.CurrentInput;
+                    _model.Clear();
                     break;
-
                 case "Delete":
-                    if (!_model.IsOperatorJustPressed &&
-                        _model.CurrentInput.Length > 0 &&
-                        !_model.IsNewCalculation)
-                    {
-                        if (_model.CurrentInput.Length > 1)
-                            DisplayText = _model.CurrentInput.Substring(0, _model.CurrentInput.Length - 1);
-                        else
-                            DisplayText = "0";
-
-                        if (string.IsNullOrEmpty(DisplayText) || DisplayText == "-")
-                            DisplayText = "0";
-                    }
+                    _model.DeleteLastDigit();
                     break;
-
                 case "PlusMinus":
-                    if (!_model.IsOperatorJustPressed &&
-                        !_model.IsNewCalculation &&
-                        _model.CurrentInput != "0")
-                    {
-                        DisplayText = _model.CurrentInput.StartsWith("-")
-                            ? _model.CurrentInput.Substring(1)
-                            : "-" + _model.CurrentInput;
-                    }
+                    _model.ToggleSign();
                     break;
-
                 case "Equals":
-                    if (!string.IsNullOrEmpty(_model.CurrentOperation) &&
-                        !_model.IsOperatorJustPressed)
-                    {
-                        _model.CalculateResult();
-                        DisplayText = _model.CurrentInput;
-                        _model.CurrentOperation = "";
-                        _model.IsNewCalculation = true;
-                    }
+                    _model.CalculateResult();
                     break;
-
                 case "Decimal":
-                    if (_model.IsOperatorJustPressed)
-                    {
-                        DisplayText = "0,";
-                        _model.IsOperatorJustPressed = false;
-                    }
-                    else if (!_model.CurrentInput.Contains(","))
-                    {
-                        _model.IsNewCalculation = false;
-                        DisplayText += ",";
-                    }
+                    _model.AddDecimalPoint();
                     break;
             }
+            UpdateDisplay();
         }
 
         private void ExecuteScientific(object parameter)
         {
             string function = parameter?.ToString() ?? "";
 
-            if (!double.TryParse(_model.CurrentInput, out double currentNumber))
-            {
-                DisplayText = "Ошибка";
-                return;
-            }
-
-            double result = 0;
-
             switch (function)
             {
                 case "Sqrt":
-                    if (currentNumber < 0)
-                    {
-                        DisplayText = "Ошибка";
-                        return;
-                    }
-                    result = Math.Sqrt(currentNumber);
+                    _model.SquareRoot();
                     break;
-
                 case "Power":
-                    result = Math.Pow(currentNumber, 2);
+                    _model.Square();
                     break;
-
                 case "PowerY":
-                    _model.CurrentOperation = "^";
-                    _model.FirstNumber = currentNumber;
-                    _model.IsOperatorJustPressed = true;
+                    _model.PowerY();
+                    UpdateDisplay();
                     return;
-
                 case "Log":
-                    if (currentNumber <= 0)
-                    {
-                        DisplayText = "Ошибка";
-                        return;
-                    }
-                    result = Math.Log10(currentNumber);
+                    _model.Log10();
                     break;
-
                 case "Ln":
-                    if (currentNumber <= 0)
-                    {
-                        DisplayText = "Ошибка";
-                        return;
-                    }
-                    result = Math.Log(currentNumber);
+                    _model.Ln();
                     break;
-
                 case "Sin":
-                    result = Math.Sin(currentNumber * Math.PI / 180);
+                    _model.Sin();
                     break;
-
                 case "Cos":
-                    result = Math.Cos(currentNumber * Math.PI / 180);
+                    _model.Cos();
                     break;
-
                 case "Tan":
-                    result = Math.Tan(currentNumber * Math.PI / 180);
+                    _model.Tan();
                     break;
-
                 case "Percent":
-                    result = currentNumber / 100;
+                    _model.Percent();
                     break;
-
                 case "MemorySave":
-                    _model.MemoryValue = currentNumber;
+                    _model.MemorySave();
+                    UpdateDisplay();
                     return;
-
                 case "MemoryRecall":
-                    DisplayText = _model.MemoryValue.ToString();
-                    return;
-
+                    _model.MemoryRecall();
+                    break;
                 case "MemoryClear":
-                    _model.MemoryValue = 0;
+                    _model.MemoryClear();
+                    UpdateDisplay();
                     return;
-
                 case "MemoryAdd":
-                    _model.MemoryValue += currentNumber;
-                    return;
-
-                default:
+                    _model.MemoryAdd();
+                    UpdateDisplay();
                     return;
             }
+            UpdateDisplay();
+        }
 
-            DisplayText = result.ToString();
-            _model.IsNewCalculation = true;
+        private void UpdateDisplay()
+        {
+            OnPropertyChanged(nameof(DisplayText));
         }
 
         private void ToggleScientificPopup()
