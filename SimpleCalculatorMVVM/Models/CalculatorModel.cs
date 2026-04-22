@@ -48,10 +48,8 @@ namespace SimpleCalculatorMVVM.Models
             set => _memoryValue = value;
         }
 
-        // ЛОГИКА ДЛЯ ЦИФР
         public void AddDigit(string digit)
         {
-            // Если начинаем новое вычисление или только что нажали оператор
             if (_isNewCalculation || _currentInput == "0" || _isOperatorJustPressed)
             {
                 _currentInput = digit;
@@ -64,30 +62,26 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        // ЛОГИКА ДЛЯ ОПЕРАТОРОВ
         public void SetOperator(string operation)
         {
             if (!_isOperatorJustPressed)
             {
                 if (!string.IsNullOrEmpty(_currentOperation))
                 {
-                    // Если уже есть операция, вычисляем результат
                     CalculateResult();
                     _firstNumber = double.Parse(_currentInput, CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    // Сохраняем первое число
                     _firstNumber = double.Parse(_currentInput, CultureInfo.InvariantCulture);
                 }
             }
 
             _currentOperation = operation;
             _isOperatorJustPressed = true;
-            _isNewCalculation = true; // После нажатия оператора начинаем новый ввод
+            _isNewCalculation = true; 
         }
 
-        // ЛОГИКА ВЫЧИСЛЕНИЙ
         public void CalculateResult()
         {
             try
@@ -120,7 +114,6 @@ namespace SimpleCalculatorMVVM.Models
                         return;
                 }
 
-                // Форматируем результат (убираем лишние знаки после запятой)
                 _currentInput = FormatResult(result);
                 _firstNumber = result;
                 _currentOperation = "";
@@ -139,18 +132,14 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        // Форматирование результата
         private string FormatResult(double result)
         {
-            // Если число целое, показываем без десятичной части
             if (result == Math.Floor(result))
                 return result.ToString("0", CultureInfo.InvariantCulture);
 
-            // Иначе показываем с десятичной точкой, но ограничиваем 10 знаками
             return result.ToString("0.##########", CultureInfo.InvariantCulture);
         }
 
-        // ЛОГИКА ФУНКЦИЙ
         public void Clear()
         {
             _currentInput = "0";
@@ -200,7 +189,6 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        // НАУЧНЫЕ ФУНКЦИИ
         public void SquareRoot()
         {
             try
@@ -364,7 +352,6 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        // ПАМЯТЬ
         public void MemorySave()
         {
             try

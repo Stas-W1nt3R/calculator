@@ -64,6 +64,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CommandManager\CommandInvoker.cs" />
+    <Compile Include="Commands\DigitCommand.cs" />
+    <Compile Include="Commands\FunctionCommand.cs" />
+    <Compile Include="Commands\ICalculatorCommand.cs" />
+    <Compile Include="Commands\OperatorCommand.cs" />
+    <Compile Include="Commands\RedoCommand.cs" />
+    <Compile Include="Commands\ScientificCommand.cs" />
+    <Compile Include="Commands\UndoCommand.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -16,8 +16,8 @@ namespace SimpleCalculatorMVVM.ViewModels
 
         public event EventHandler CanExecuteChanged
         {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
+            add => System.Windows.Input.CommandManager.RequerySuggested += value;
+            remove => System.Windows.Input.CommandManager.RequerySuggested -= value;
         }
 
         public bool CanExecute(object parameter)
@@ -28,6 +28,12 @@ namespace SimpleCalculatorMVVM.ViewModels
         public void Execute(object parameter)
         {
             _execute(parameter);
+        }
+
+        // Метод для принудительного обновления состояния
+        public void RaiseCanExecuteChanged()
+        {
+            System.Windows.Input.CommandManager.InvalidateRequerySuggested();
         }
     }
 }

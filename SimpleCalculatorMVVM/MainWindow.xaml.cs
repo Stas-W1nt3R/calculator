@@ -1,8 +1,8 @@
-﻿using SimpleCalculatorMVVM.ViewModels;
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using SimpleCalculatorMVVM.ViewModels;
 
 namespace SimpleCalculatorMVVM
 {
@@ -14,12 +14,40 @@ namespace SimpleCalculatorMVVM
         {
             InitializeComponent();
             _viewModel = (MainViewModel)DataContext;
-
-            this.KeyDown += MainWindow_KeyDown;
         }
 
-        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
+            // Если открыто окно научных функций
+            if (_viewModel.IsScientificPopupOpen)
+            {
+                if (e.Key == Key.Escape)
+                {
+                    _viewModel.ToggleScientificCommand.Execute(null);
+                    e.Handled = true;
+                }
+                return;
+            }
+
+            // Ctrl+Z для Undo
+            if (e.Key == Key.Z && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (_viewModel.CanUndo)
+                    _viewModel.UndoCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
+
+            // Ctrl+Y для Redo
+            if (e.Key == Key.Y && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                if (_viewModel.CanRedo)
+                    _viewModel.RedoCommand.Execute(null);
+                e.Handled = true;
+                return;
+            }
+
+            // Цифры
             if (e.Key >= Key.D0 && e.Key <= Key.D9)
             {
                 string digit = e.Key.ToString().Last().ToString();
@@ -32,7 +60,7 @@ namespace SimpleCalculatorMVVM
                 _viewModel.DigitCommand.Execute(digit);
                 e.Handled = true;
             }
-
+            // Операторы
             else if (e.Key == Key.Add)
             {
                 _viewModel.OperatorCommand.Execute("+");
@@ -53,7 +81,7 @@ namespace SimpleCalculatorMVVM
                 _viewModel.OperatorCommand.Execute("÷");
                 e.Handled = true;
             }
-
+            // Функции
             else if (e.Key == Key.Enter)
             {
                 _viewModel.FunctionCommand.Execute("Equals");
@@ -74,9 +102,6 @@ namespace SimpleCalculatorMVVM
                 _viewModel.FunctionCommand.Execute("Delete");
                 e.Handled = true;
             }
-
-            if (_viewModel.IsScientificPopupOpen)
-                _viewModel.ToggleScientificCommand.Execute(null);
         }
     }
 }
