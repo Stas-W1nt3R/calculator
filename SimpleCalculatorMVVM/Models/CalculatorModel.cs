@@ -12,43 +12,43 @@ namespace SimpleCalculatorMVVM.Models
         private bool _isOperatorJustPressed = false;
         private double _memoryValue = 0;
 
-        public string CurrentInput
+        public virtual string CurrentInput
         {
             get => _currentInput;
             set => _currentInput = value;
         }
 
-        public string CurrentOperation
+        public virtual string CurrentOperation
         {
             get => _currentOperation;
             set => _currentOperation = value;
         }
 
-        public double FirstNumber
+        public virtual double FirstNumber
         {
             get => _firstNumber;
             set => _firstNumber = value;
         }
 
-        public bool IsNewCalculation
+        public virtual bool IsNewCalculation
         {
             get => _isNewCalculation;
             set => _isNewCalculation = value;
         }
 
-        public bool IsOperatorJustPressed
+        public virtual bool IsOperatorJustPressed
         {
             get => _isOperatorJustPressed;
             set => _isOperatorJustPressed = value;
         }
 
-        public double MemoryValue
+        public virtual double MemoryValue
         {
             get => _memoryValue;
             set => _memoryValue = value;
         }
 
-        public void AddDigit(string digit)
+        public virtual void AddDigit(string digit)
         {
             if (_isNewCalculation || _currentInput == "0" || _isOperatorJustPressed)
             {
@@ -62,14 +62,13 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        public void SetOperator(string operation)
+        public virtual void SetOperator(string operation)
         {
             if (!_isOperatorJustPressed)
             {
                 if (!string.IsNullOrEmpty(_currentOperation))
                 {
                     CalculateResult();
-                    _firstNumber = double.Parse(_currentInput, CultureInfo.InvariantCulture);
                 }
                 else
                 {
@@ -79,10 +78,10 @@ namespace SimpleCalculatorMVVM.Models
 
             _currentOperation = operation;
             _isOperatorJustPressed = true;
-            _isNewCalculation = true; 
+            _isNewCalculation = true;
         }
 
-        public void CalculateResult()
+        public virtual void CalculateResult()
         {
             try
             {
@@ -91,33 +90,20 @@ namespace SimpleCalculatorMVVM.Models
 
                 switch (_currentOperation)
                 {
-                    case "+":
-                        result = _firstNumber + secondNumber;
-                        break;
-                    case "-":
-                        result = _firstNumber - secondNumber;
-                        break;
-                    case "x":
-                    case "*":
-                        result = _firstNumber * secondNumber;
-                        break;
+                    case "+": result = _firstNumber + secondNumber; break;
+                    case "-": result = _firstNumber - secondNumber; break;
+                    case "x": result = _firstNumber * secondNumber; break;
                     case "÷":
-                    case "/":
-                        if (secondNumber == 0)
-                            throw new DivideByZeroException();
+                        if (secondNumber == 0) throw new DivideByZeroException();
                         result = _firstNumber / secondNumber;
                         break;
-                    case "^":
-                        result = Math.Pow(_firstNumber, secondNumber);
-                        break;
-                    default:
-                        return;
+                    case "^": result = Math.Pow(_firstNumber, secondNumber); break;
                 }
 
-                _currentInput = FormatResult(result);
+                _currentInput = result.ToString(CultureInfo.InvariantCulture);
                 _firstNumber = result;
-                _currentOperation = "";
                 _isNewCalculation = true;
+                _currentOperation = "";
                 _isOperatorJustPressed = false;
             }
             catch (DivideByZeroException)
@@ -132,15 +118,7 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        private string FormatResult(double result)
-        {
-            if (result == Math.Floor(result))
-                return result.ToString("0", CultureInfo.InvariantCulture);
-
-            return result.ToString("0.##########", CultureInfo.InvariantCulture);
-        }
-
-        public void Clear()
+        public virtual void Clear()
         {
             _currentInput = "0";
             _currentOperation = "";
@@ -149,7 +127,7 @@ namespace SimpleCalculatorMVVM.Models
             _isOperatorJustPressed = false;
         }
 
-        public void DeleteLastDigit()
+        public virtual void DeleteLastDigit()
         {
             if (!_isOperatorJustPressed && _currentInput.Length > 0 && !_isNewCalculation)
             {
@@ -163,7 +141,7 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        public void ToggleSign()
+        public virtual void ToggleSign()
         {
             if (!_isOperatorJustPressed && !_isNewCalculation && _currentInput != "0")
             {
@@ -174,7 +152,7 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        public void AddDecimalPoint()
+        public virtual void AddDecimalPoint()
         {
             if (_isOperatorJustPressed)
             {
@@ -189,212 +167,113 @@ namespace SimpleCalculatorMVVM.Models
             }
         }
 
-        public void SquareRoot()
+        public virtual void SquareRoot()
         {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                if (number < 0)
-                {
-                    _currentInput = "Ошибка";
-                    Reset();
-                    return;
-                }
-                _currentInput = FormatResult(Math.Sqrt(number));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            if (number < 0)
             {
                 _currentInput = "Ошибка";
                 Reset();
+                return;
             }
-        }
-
-        public void Square()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                _currentInput = FormatResult(Math.Pow(number, 2));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void PowerY()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                _currentOperation = "^";
-                _firstNumber = number;
-                _isOperatorJustPressed = true;
-                _isNewCalculation = true;
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void Log10()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                if (number <= 0)
-                {
-                    _currentInput = "Ошибка";
-                    Reset();
-                    return;
-                }
-                _currentInput = FormatResult(Math.Log10(number));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void Ln()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                if (number <= 0)
-                {
-                    _currentInput = "Ошибка";
-                    Reset();
-                    return;
-                }
-                _currentInput = FormatResult(Math.Log(number));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void Sin()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                _currentInput = FormatResult(Math.Sin(number * Math.PI / 180));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void Cos()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                _currentInput = FormatResult(Math.Cos(number * Math.PI / 180));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void Tan()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                _currentInput = FormatResult(Math.Tan(number * Math.PI / 180));
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void Percent()
-        {
-            try
-            {
-                double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-                _currentInput = FormatResult(number / 100);
-                _isNewCalculation = true;
-                _currentOperation = "";
-            }
-            catch
-            {
-                _currentInput = "Ошибка";
-                Reset();
-            }
-        }
-
-        public void MemorySave()
-        {
-            try
-            {
-                _memoryValue = double.Parse(_currentInput, CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                _memoryValue = 0;
-            }
-        }
-
-        public void MemoryRecall()
-        {
-            _currentInput = FormatResult(_memoryValue);
+            _currentInput = Math.Sqrt(number).ToString(CultureInfo.InvariantCulture);
             _isNewCalculation = true;
-            _isOperatorJustPressed = false;
         }
 
-        public void MemoryClear()
+        public virtual void Square()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            _currentInput = Math.Pow(number, 2).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void PowerY()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            _currentOperation = "^";
+            _firstNumber = number;
+            _isOperatorJustPressed = true;
+            _isNewCalculation = true;
+        }
+
+        public virtual void Sin()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            _currentInput = Math.Sin(number * Math.PI / 180).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void Cos()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            _currentInput = Math.Cos(number * Math.PI / 180).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void Tan()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            _currentInput = Math.Tan(number * Math.PI / 180).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void Percent()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            _currentInput = (number / 100).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void Log10()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            if (number <= 0)
+            {
+                _currentInput = "Ошибка";
+                Reset();
+                return;
+            }
+            _currentInput = Math.Log10(number).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void Ln()
+        {
+            double number = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+            if (number <= 0)
+            {
+                _currentInput = "Ошибка";
+                Reset();
+                return;
+            }
+            _currentInput = Math.Log(number).ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void MemorySave()
+        {
+            _memoryValue = double.Parse(_currentInput, CultureInfo.InvariantCulture);
+        }
+
+        public virtual void MemoryRecall()
+        {
+            _currentInput = _memoryValue.ToString(CultureInfo.InvariantCulture);
+            _isNewCalculation = true;
+        }
+
+        public virtual void MemoryClear()
         {
             _memoryValue = 0;
         }
 
-        public void MemoryAdd()
+        public virtual void MemoryAdd()
         {
-            try
-            {
-                _memoryValue += double.Parse(_currentInput, CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                _memoryValue += 0;
-            }
+            _memoryValue += double.Parse(_currentInput, CultureInfo.InvariantCulture);
         }
 
-        public void Reset()
+        public virtual void Reset()
         {
-            _currentInput = "0";
-            _currentOperation = "";
-            _firstNumber = 0;
-            _isNewCalculation = true;
-            _isOperatorJustPressed = false;
+            Clear();
         }
     }
 }

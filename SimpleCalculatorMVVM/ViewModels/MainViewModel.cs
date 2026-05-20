@@ -1,6 +1,7 @@
-﻿using SimpleCalculatorMVVM.Models;
+﻿using SimpleCalculatorMVVM.CommandManager;
 using SimpleCalculatorMVVM.Commands;
-using SimpleCalculatorMVVM.CommandManager;
+using SimpleCalculatorMVVM.Decorators;
+using SimpleCalculatorMVVM.Models;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -16,7 +17,12 @@ namespace SimpleCalculatorMVVM.ViewModels
 
         public MainViewModel()
         {
-            _model = new CalculatorModel();
+            CalculatorModel baseModel = new CalculatorModel();           
+            baseModel = new ValidationDecorator(baseModel);             
+            baseModel = new RoundingDecorator(baseModel, 10);          
+            _model = baseModel;
+
+
             _invoker = new CommandInvoker();
 
             // Создаем команды-обертки для UI
