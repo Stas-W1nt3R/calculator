@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\icons8-сортировка-32.png" />
+    <None Remove="images\photo_2025-11-29_22-58-09.png" />
+    <None Remove="images\{EA06704D-0329-4CBC-AAE6-D89A0C0B4851}.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\icons8-сортировка-32.png" />
+    <Resource Include="images\photo_2025-11-29_22-58-09.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\{EA06704D-0329-4CBC-AAE6-D89A0C0B4851}.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>

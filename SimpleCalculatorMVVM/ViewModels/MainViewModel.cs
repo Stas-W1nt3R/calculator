@@ -1,10 +1,12 @@
-﻿using SimpleCalculatorMVVM.CommandManager;
+﻿using Library;
+using SimpleCalculatorMVVM.CommandManager;
 using SimpleCalculatorMVVM.Commands;
 using SimpleCalculatorMVVM.Decorators;
 using SimpleCalculatorMVVM.Models;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SimpleCalculatorMVVM.ViewModels
@@ -15,13 +17,15 @@ namespace SimpleCalculatorMVVM.ViewModels
         private readonly CommandInvoker _invoker;
         private bool _isScientificPopupOpen;
 
+        // ← НОВОЕ: событие для смены темы
+        public event EventHandler<string> ThemeChanged;
+
         public MainViewModel()
         {
-            CalculatorModel baseModel = new CalculatorModel();           
-            baseModel = new ValidationDecorator(baseModel);             
-            baseModel = new RoundingDecorator(baseModel, 10);          
+            CalculatorModel baseModel = new CalculatorModel();
+            baseModel = new ValidationDecorator(baseModel);
+            baseModel = new RoundingDecorator(baseModel, 10);
             _model = baseModel;
-
 
             _invoker = new CommandInvoker();
 
@@ -33,6 +37,12 @@ namespace SimpleCalculatorMVVM.ViewModels
             ToggleScientificCommand = new RelayCommand(_ => ToggleScientificPopup());
             UndoCommand = new RelayCommand(_ => ExecuteUndo(), _ => _invoker.CanUndo);
             RedoCommand = new RelayCommand(_ => ExecuteRedo(), _ => _invoker.CanRedo);
+
+            ShowAboutCommand = new RelayCommand(_ => ShowAbout());
+            ShowHelpCommand = new RelayCommand(_ => ShowHelp());
+
+            // ← НОВАЯ КОМАНДА: смена темы
+            ChangeThemeCommand = new RelayCommand(ExecuteChangeTheme);
         }
 
         public string DisplayText
@@ -69,9 +79,60 @@ namespace SimpleCalculatorMVVM.ViewModels
         public ICommand UndoCommand { get; }
         public ICommand RedoCommand { get; }
 
+        public ICommand ShowAboutCommand { get; }
+        public ICommand ShowHelpCommand { get; }
+
+        // ← НОВОЕ: команда смены темы
+        public ICommand ChangeThemeCommand { get; }
+
+        private void ShowAbout()
+        {
+            try
+            {
+                var aboutWindow = new AboutWindow();
+                aboutWindow.Owner = Application.Current.MainWindow;
+                aboutWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка открытия окна: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ShowHelp()
+        {
+            try
+            {
+                var helpWindow = new HelpWindow();
+                helpWindow.Owner = Application.Current.MainWindow;
+                helpWindow.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка открытия окна: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // ← НОВЫЙ МЕТОД: смена темы
+        private void ExecuteChangeTheme(object parameter)
+        {
+            string theme = parameter?.ToString() ?? "Light";
+
+            AppConfig.Current.Theme = theme;
+            AppConfig.Save();
+
+            // Уведомляем View о смене темы
+            ThemeChanged?.Invoke(this, theme);
+        }
+
         private void ExecuteDigit(object parameter)
         {
             string digit = parameter?.ToString() ?? "0";
+
+            SoundManager.PlayClick();
+
             var command = new DigitCommand(_model, digit);
             _invoker.ExecuteCommand(command);
             UpdateDisplay();

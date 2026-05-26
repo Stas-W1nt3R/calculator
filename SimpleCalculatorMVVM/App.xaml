@@ -4,6 +4,8 @@
              xmlns:local="clr-namespace:SimpleCalculatorMVVM"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-
+        <Style TargetType="Window">
+            <Setter Property="Icon" Value="icons8-сортировка-32.png"/>
+        </Style>
     </Application.Resources>
 </Application>

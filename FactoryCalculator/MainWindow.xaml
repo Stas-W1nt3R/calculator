@@ -1,11 +1,13 @@
-﻿<Window x:Class="FactoryCalculator.MainWindow"
+﻿<Window x:Class="SimpleCalculatorMVVM.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FactoryCalculator"
+        xmlns:local="clr-namespace:SimpleCalculatorMVVM"
         mc:Ignorable="d"
-        Title="Научный калькулятор" Height="550" Width="500"
+        Title="Научный калькулятор" 
+        Height="600" 
+        Width="500"
         WindowStartupLocation="CenterScreen"
         Background="#1A1A1A"
         PreviewKeyDown="Window_PreviewKeyDown">
@@ -25,7 +27,7 @@
                                 CornerRadius="8"
                                 Margin="3">
                             <ContentPresenter HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -86,18 +88,30 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Дисплей -->
-        <Border Grid.Row="0" 
-                Margin="15,15,15,0" 
+        <!-- МЕНЮ -->
+        <Menu Grid.Row="0" Background="#2D2D2D" Foreground="White">
+            <MenuItem Header="Справка" Foreground="White">
+                <MenuItem Header="О программе" 
+                          Command="{Binding ShowAboutCommand}"
+                          Foreground="Black"/>
+                <MenuItem Header="Об авторах" 
+                          Command="{Binding ShowHelpCommand}"
+                          Foreground="Black"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- ДИСПЛЕЙ -->
+        <Border Grid.Row="1" 
+                Margin="15,10,15,0" 
                 Background="#1F1F1F" 
                 CornerRadius="12"
                 BorderBrush="#3D3D3D"
                 BorderThickness="1">
-            <TextBox x:Name="DisplayTextBox"
-                     Text="0"
+            <TextBox Text="{Binding DisplayText, UpdateSourceTrigger=PropertyChanged}"
                      IsReadOnly="True"
                      HorizontalAlignment="Stretch" 
                      VerticalAlignment="Center" 
@@ -111,16 +125,16 @@
                      BorderThickness="0"/>
         </Border>
 
-        <!-- Кнопка расширения -->
-        <Button Grid.Row="1" 
-                Content=" Научные функции" 
-                Click="ToggleScientificPanel_Click"
+        <!-- КНОПКА РАСШИРЕНИЯ -->
+        <Button Grid.Row="2" 
+                Content="Научные функции" 
+                Command="{Binding ToggleScientificCommand}"
                 Style="{StaticResource ExpandButtonStyle}"
                 Margin="15,10,15,10"
                 Height="40"/>
 
-        <!-- Основные кнопки -->
-        <Grid Grid.Row="2" Margin="15,0,15,15">
+        <!-- ОСНОВНЫЕ КНОПКИ -->
+        <Grid Grid.Row="3" Margin="15,0,15,15">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -138,112 +152,131 @@
             <!-- Строка 1 -->
             <Button Grid.Row="0" Grid.Column="0" 
                     Content="C" 
-                    Click="FunctionButton_Click" 
+                    Command="{Binding FunctionCommand}"
+                    CommandParameter="Clear"
                     Style="{StaticResource FunctionButtonStyle}"/>
 
             <Button Grid.Row="0" Grid.Column="1" 
                     Content="⌫" 
-                    Click="FunctionButton_Click" 
+                    Command="{Binding FunctionCommand}"
+                    CommandParameter="Delete"
                     Style="{StaticResource FunctionButtonStyle}"/>
 
             <Button Grid.Row="0" Grid.Column="2" 
                     Content="±" 
-                    Click="FunctionButton_Click" 
+                    Command="{Binding FunctionCommand}"
+                    CommandParameter="PlusMinus"
                     Style="{StaticResource FunctionButtonStyle}"/>
 
             <Button Grid.Row="0" Grid.Column="3" 
                     Content="÷" 
-                    Click="OperatorButton_Click" 
+                    Command="{Binding OperatorCommand}"
+                    CommandParameter="÷"
                     Style="{StaticResource OperatorButtonStyle}"/>
 
             <!-- Строка 2 -->
             <Button Grid.Row="1" Grid.Column="0" 
                     Content="7" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="7"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="1" Grid.Column="1" 
                     Content="8" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="8"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="1" Grid.Column="2" 
                     Content="9" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="9"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="1" Grid.Column="3" 
                     Content="x" 
-                    Click="OperatorButton_Click" 
+                    Command="{Binding OperatorCommand}"
+                    CommandParameter="x"
                     Style="{StaticResource OperatorButtonStyle}"/>
 
             <!-- Строка 3 -->
             <Button Grid.Row="2" Grid.Column="0" 
                     Content="4" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="4"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="2" Grid.Column="1" 
                     Content="5" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="5"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="2" Grid.Column="2" 
                     Content="6" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="6"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="2" Grid.Column="3" 
                     Content="-" 
-                    Click="OperatorButton_Click" 
+                    Command="{Binding OperatorCommand}"
+                    CommandParameter="-"
                     Style="{StaticResource OperatorButtonStyle}"/>
 
             <!-- Строка 4 -->
             <Button Grid.Row="3" Grid.Column="0" 
                     Content="1" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="1"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="3" Grid.Column="1" 
                     Content="2" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="2"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="3" Grid.Column="2" 
                     Content="3" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="3"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="3" Grid.Column="3" 
                     Content="+" 
-                    Click="OperatorButton_Click" 
+                    Command="{Binding OperatorCommand}"
+                    CommandParameter="+"
                     Style="{StaticResource OperatorButtonStyle}"/>
 
             <!-- Строка 5 -->
             <Button Grid.Row="4" Grid.Column="0" 
                     Content="0" 
-                    Click="DigitButton_Click" 
+                    Command="{Binding DigitCommand}"
+                    CommandParameter="0"
                     Style="{StaticResource NumberButtonStyle}"
                     Grid.ColumnSpan="2"/>
 
             <Button Grid.Row="4" Grid.Column="2" 
                     Content="." 
-                    Click="FunctionButton_Click" 
+                    Command="{Binding FunctionCommand}"
+                    CommandParameter="Decimal"
                     Style="{StaticResource NumberButtonStyle}"/>
 
             <Button Grid.Row="4" Grid.Column="3" 
                     Content="=" 
-                    Click="FunctionButton_Click" 
+                    Command="{Binding FunctionCommand}"
+                    CommandParameter="Equals"
                     Style="{StaticResource EqualsButtonStyle}"/>
         </Grid>
 
-        <!-- Всплывающее окно с научными функциями -->
-        <Popup x:Name="ScientificPopup" 
-               PlacementTarget="{Binding ElementName=DisplayTextBox}"
-               Placement="Bottom"
+        <!-- POPUP -->
+        <Popup IsOpen="{Binding IsScientificPopupOpen}"
+               Placement="Center"
                StaysOpen="False"
                Width="460"
-               Height="380">
+               Height="380"
+               Grid.RowSpan="4">
             <Border Background="#2D2D2D" 
                     CornerRadius="12" 
                     BorderBrush="#FF9F0A" 
@@ -268,7 +301,6 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Заголовок -->
                     <Label Grid.Row="0" Grid.ColumnSpan="4" 
                            Content="Научные функции" 
                            Foreground="#FF9F0A" 
@@ -277,7 +309,6 @@
                            FontWeight="Bold"
                            Margin="0,5"/>
 
-                    <!-- Тригонометрические функции -->
                     <Label Grid.Row="1" Grid.ColumnSpan="4" 
                            Content="Тригонометрические" 
                            Foreground="#FF9F0A" 
@@ -287,25 +318,28 @@
 
                     <Button Grid.Row="2" Grid.Column="0" 
                             Content="sin" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Sin"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="2" Grid.Column="1" 
                             Content="cos" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Cos"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="2" Grid.Column="2" 
                             Content="tan" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Tan"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="2" Grid.Column="3" 
                             Content="√" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Sqrt"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
-                    <!-- Степени и корни -->
                     <Label Grid.Row="3" Grid.ColumnSpan="4" 
                            Content="Степени и корни" 
                            Foreground="#FF9F0A" 
@@ -315,20 +349,22 @@
 
                     <Button Grid.Row="4" Grid.Column="0" 
                             Content="x²" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Power"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="4" Grid.Column="1" 
                             Content="xʸ" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="PowerY"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="4" Grid.Column="2" 
                             Content="%" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Percent"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
-                    <!-- Логарифмы -->
                     <Label Grid.Row="5" Grid.ColumnSpan="4" 
                            Content="Логарифмы" 
                            Foreground="#FF9F0A" 
@@ -338,15 +374,16 @@
 
                     <Button Grid.Row="6" Grid.Column="0" 
                             Content="log" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Log"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="6" Grid.Column="1" 
                             Content="ln" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="Ln"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
-                    <!-- Память -->
                     <Label Grid.Row="7" Grid.ColumnSpan="4" 
                            Content="Память" 
                            Foreground="#FF9F0A" 
@@ -356,22 +393,26 @@
 
                     <Button Grid.Row="8" Grid.Column="0" 
                             Content="MS" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="MemorySave"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="8" Grid.Column="1" 
                             Content="MR" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="MemoryRecall"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="8" Grid.Column="2" 
                             Content="MC" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="MemoryClear"
                             Style="{StaticResource FunctionButtonStyle}"/>
 
                     <Button Grid.Row="8" Grid.Column="3" 
                             Content="M+" 
-                            Click="ScientificButton_Click" 
+                            Command="{Binding ScientificCommand}"
+                            CommandParameter="MemoryAdd"
                             Style="{StaticResource FunctionButtonStyle}"/>
                 </Grid>
             </Border>
